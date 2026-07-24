@@ -94,7 +94,10 @@ async def _read_upload(file: UploadFile) -> bytes:
 
 
 @app.post("/redact")
-async def redact(file: UploadFile = File(...), background_tasks: BackgroundTasks = None):
+async def redact(
+    background_tasks: BackgroundTasks,
+    file: UploadFile = File(...),
+):
     data = await _read_upload(file)
     with tempfile.TemporaryDirectory() as tmp:
         tmp_path = Path(tmp)
@@ -106,8 +109,7 @@ async def redact(file: UploadFile = File(...), background_tasks: BackgroundTasks
         final = tempfile.NamedTemporaryFile(delete=False, suffix=".docx")
         final.write(out.read_bytes())
         final.close()
-    if background_tasks is not None:
-        background_tasks.add_task(_cleanup, final.name)
+    background_tasks.add_task(_cleanup, final.name)
     return FileResponse(
         final.name,
         media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
