@@ -64,6 +64,8 @@ Modular monolith. One library, two thin entry points (CLI + FastAPI).
 
 ## Demo API (Render)
 
+Repo: https://github.com/Karthik-banglore/pii-redactor
+
 The deployed service is a **size-capped demo** (~2 MB upload). Render free tier is 512 MB RAM / 0.1 CPU and sleeps after 15 minutes idle. The full prospectus is processed by the CLI.
 
 ```
