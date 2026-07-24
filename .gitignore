@@ -1,0 +1,24 @@
+.venv/
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+dist/
+build/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.DS_Store
+.env
+*.log
+
+# Client document and generated outputs — never commit
+data/
+!data/.gitkeep
+!data/input/.gitkeep
+!data/output/.gitkeep
+
+# Local audit / temp
+*.jsonl
+!eval/gold/gold_spans.jsonl

@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pii-redactor"
+version = "0.1.0"
+description = "PII detection and deterministic pseudonymisation for Word documents"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "python-docx>=1.1.0",
+    "lxml>=4.9.0",
+    "spacy>=3.7.0,<3.8.0",
+    "faker>=24.0.0",
+    "fastapi>=0.110.0",
+    "uvicorn[standard]>=0.27.0",
+    "python-multipart>=0.0.9",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "httpx>=0.27.0",
+]
+
+[project.scripts]
+pii-redact = "pii_redactor.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]

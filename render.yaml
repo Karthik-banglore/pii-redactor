@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: pii-redactor
+    runtime: docker
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: SPACY_MODEL
+        value: en_core_web_sm
+      - key: MAX_UPLOAD_BYTES
+        value: "2097152"

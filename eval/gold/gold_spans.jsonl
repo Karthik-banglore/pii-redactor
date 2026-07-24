@@ -1,0 +1,40 @@
+{"location": "gold:front_matter", "entity_type": "EMAIL", "text": "Sarthak.malvadkar@kshinterantional.com"}
+{"location": "gold:front_matter", "entity_type": "EMAIL", "text": "ksh.ipo@nuvama.com"}
+{"location": "gold:front_matter", "entity_type": "EMAIL", "text": "customerservice.mb@nuvama.com"}
+{"location": "gold:front_matter", "entity_type": "EMAIL", "text": "ksh@icicisecurities.com"}
+{"location": "gold:front_matter", "entity_type": "EMAIL", "text": "ipo@trilegal.com"}
+{"location": "gold:front_matter", "entity_type": "EMAIL", "text": "parag.pansare@kirtanepandit.com"}
+{"location": "gold:front_matter", "entity_type": "EMAIL", "text": "manisha.shukla@hdfcbank.com"}
+{"location": "gold:front_matter", "entity_type": "PHONE", "text": "+91 22 40094400"}
+{"location": "gold:front_matter", "entity_type": "PHONE", "text": "+91 20 45053237"}
+{"location": "gold:front_matter", "entity_type": "PHONE", "text": "+91 22 6807 7100"}
+{"location": "gold:front_matter", "entity_type": "COMPANY", "text": "Nuvama Wealth Management Limited"}
+{"location": "gold:front_matter", "entity_type": "COMPANY", "text": "ICICI Securities Limited"}
+{"location": "gold:front_matter", "entity_type": "COMPANY", "text": "HDFC Bank Limited"}
+{"location": "gold:front_matter", "entity_type": "PERSON", "text": "Sarthak Malvadkar"}
+{"location": "gold:front_matter", "entity_type": "PERSON", "text": "Lokesh Shah"}
+{"location": "gold:management", "entity_type": "PERSON", "text": "Kushal Subbayya Hegde"}
+{"location": "gold:management", "entity_type": "PERSON", "text": "Rajesh Kushal Hegde"}
+{"location": "gold:management", "entity_type": "PERSON", "text": "Rohit Kushal Hegde"}
+{"location": "gold:management", "entity_type": "PERSON", "text": "Rakhi Girija Shetty"}
+{"location": "gold:management", "entity_type": "PERSON", "text": "Dinesh Hirachand Munot"}
+{"location": "gold:management", "entity_type": "PERSON", "text": "Ajay Shriram Patil"}
+{"location": "gold:management", "entity_type": "PERSON", "text": "Ram Kumar Tiwari"}
+{"location": "gold:management", "entity_type": "PERSON", "text": "Indu Jacob"}
+{"location": "gold:management", "entity_type": "DIN", "text": "00135070"}
+{"location": "gold:management", "entity_type": "DIN", "text": "00114193"}
+{"location": "gold:management", "entity_type": "DIN", "text": "00134926"}
+{"location": "gold:management", "entity_type": "DIN", "text": "03124510"}
+{"location": "gold:management", "entity_type": "DIN", "text": "00049801"}
+{"location": "gold:management", "entity_type": "DIN", "text": "01217000"}
+{"location": "gold:management", "entity_type": "DIN", "text": "10938958"}
+{"location": "gold:management", "entity_type": "DIN", "text": "05293084"}
+{"location": "gold:management", "entity_type": "CIN", "text": "U28129PN1979PLC141032"}
+{"location": "gold:management", "entity_type": "ADDRESS", "text": "Deccan Gymkhana"}
+{"location": "gold:management", "entity_type": "COMPANY", "text": "KSH International Limited"}
+{"location": "gold:negative", "entity_type": "COMPANY", "text": "SEBI"}
+{"location": "gold:negative", "entity_type": "COMPANY", "text": "BSE Limited"}
+{"location": "gold:absent", "entity_type": "SSN", "text": "___NONE___"}
+{"location": "gold:absent", "entity_type": "CREDIT_CARD", "text": "___NONE___"}
+{"location": "gold:absent", "entity_type": "IP_ADDRESS", "text": "___NONE___"}
+{"location": "gold:absent", "entity_type": "DOB", "text": "___NONE___"}
