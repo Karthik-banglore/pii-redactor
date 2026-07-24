@@ -22,22 +22,24 @@ from pii_redactor.recognizers.patterns import (
 from pii_redactor.recognizers.person_pattern import PersonNameRecognizer
 
 
-def build_default_registry(spacy_model: str | None = None) -> RecognizerRegistry:
-    registry = RecognizerRegistry(
-        [
-            EmailRecognizer(),
-            PhoneRecognizer(),
-            SSNRecognizer(),
-            CreditCardRecognizer(),
-            IPAddressRecognizer(),
-            DOBRecognizer(),
-            DINRecognizer(),
-            PANRecognizer(),
-            CINRecognizer(),
-            AadhaarRecognizer(),
-            GSTRecognizer(),
-            PersonNameRecognizer(),
-            SpacyNERRecognizer(model=spacy_model),
-        ]
-    )
-    return registry
+def build_default_registry(
+    spacy_model: str | None = None,
+    use_spacy: bool = True,
+) -> RecognizerRegistry:
+    recognizers = [
+        EmailRecognizer(),
+        PhoneRecognizer(),
+        SSNRecognizer(),
+        CreditCardRecognizer(),
+        IPAddressRecognizer(),
+        DOBRecognizer(),
+        DINRecognizer(),
+        PANRecognizer(),
+        CINRecognizer(),
+        AadhaarRecognizer(),
+        GSTRecognizer(),
+        PersonNameRecognizer(),
+    ]
+    if use_spacy:
+        recognizers.append(SpacyNERRecognizer(model=spacy_model))
+    return RecognizerRegistry(recognizers)

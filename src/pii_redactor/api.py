@@ -5,21 +5,17 @@ from __future__ import annotations
 import os
 import tempfile
 from pathlib import Path
+from typing import Optional
 
 from fastapi import BackgroundTasks, FastAPI, File, HTTPException, UploadFile
-from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, RedirectResponse
 
-from pii_redactor.pipeline import build_pipeline
-
-
-def _cleanup(path: str) -> None:
-    try:
-        Path(path).unlink(missing_ok=True)
-    except OSError:
-        pass
+from pii_redactor.pipeline import Pipeline, build_pipeline
 
 MAX_UPLOAD_BYTES = int(os.environ.get("MAX_UPLOAD_BYTES", 2 * 1024 * 1024))  # 2 MB
 SPACY_MODEL = os.environ.get("SPACY_MODEL", "en_core_web_sm")
+# Free-tier Render is 512 MB — skip spaCy in the web demo unless explicitly enabled.
+SKIP_SPACY = os.environ.get("SKIP_SPACY", "1").lower() in {"1", "true", "yes"}
 
 app = FastAPI(
     title="PII Redactor",
@@ -30,8 +26,26 @@ app = FastAPI(
     version="0.1.0",
 )
 
-# Load pipeline (and spaCy model) once at startup — cold start pays once.
-PIPELINE = build_pipeline(spacy_model=SPACY_MODEL)
+_PIPELINE: Optional[Pipeline] = None
+
+
+def get_pipeline() -> Pipeline:
+    """Lazy-load so / and /health stay up even if the model is heavy."""
+    global _PIPELINE
+    if _PIPELINE is None:
+        _PIPELINE = build_pipeline(
+            spacy_model=None if SKIP_SPACY else SPACY_MODEL,
+            use_spacy=not SKIP_SPACY,
+        )
+    return _PIPELINE
+
+
+def _cleanup(path: str) -> None:
+    try:
+        Path(path).unlink(missing_ok=True)
+    except OSError:
+        pass
+
 
 UPLOAD_FORM = """
 <!DOCTYPE html>
@@ -70,9 +84,19 @@ def index() -> str:
     return UPLOAD_FORM
 
 
+@app.get("/redact")
+def redact_get() -> RedirectResponse:
+    """Browsers hitting /redact directly should land on the upload form."""
+    return RedirectResponse(url="/", status_code=302)
+
+
 @app.get("/health")
 def health() -> dict:
-    return {"status": "ok", "model": SPACY_MODEL}
+    return {
+        "status": "ok",
+        "model": "regex-only" if SKIP_SPACY else SPACY_MODEL,
+        "skip_spacy": SKIP_SPACY,
+    }
 
 
 async def _read_upload(file: UploadFile) -> bytes:
@@ -99,13 +123,14 @@ async def redact(
     file: UploadFile = File(...),
 ):
     data = await _read_upload(file)
+    pipeline = get_pipeline()
     with tempfile.TemporaryDirectory() as tmp:
         tmp_path = Path(tmp)
         inp = tmp_path / "input.docx"
         out = tmp_path / "redacted.docx"
         audit = tmp_path / "audit.jsonl"
         inp.write_bytes(data)
-        PIPELINE.redact(inp, out, audit_path=audit)
+        pipeline.redact(inp, out, audit_path=audit)
         final = tempfile.NamedTemporaryFile(delete=False, suffix=".docx")
         final.write(out.read_bytes())
         final.close()
@@ -120,13 +145,14 @@ async def redact(
 @app.post("/analyze")
 async def analyze(file: UploadFile = File(...)):
     data = await _read_upload(file)
+    pipeline = get_pipeline()
     with tempfile.TemporaryDirectory() as tmp:
         tmp_path = Path(tmp)
         inp = tmp_path / "input.docx"
         out = tmp_path / "redacted.docx"
         audit_path = tmp_path / "audit.jsonl"
         inp.write_bytes(data)
-        audit = PIPELINE.redact(inp, out, audit_path=audit_path)
+        audit = pipeline.redact(inp, out, audit_path=audit_path)
         return JSONResponse(
             {
                 "count": len(audit.records),

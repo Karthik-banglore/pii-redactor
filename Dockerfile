@@ -3,7 +3,8 @@ FROM python:3.11-slim
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     SPACY_MODEL=en_core_web_sm \
-    MAX_UPLOAD_BYTES=2097152
+    MAX_UPLOAD_BYTES=2097152 \
+    SKIP_SPACY=1
 
 WORKDIR /app
 
@@ -17,6 +18,5 @@ COPY src ./src
 RUN pip install --no-cache-dir -e . \
     && python -m spacy download en_core_web_sm
 
-EXPOSE 8000
-
-CMD ["uvicorn", "pii_redactor.api:app", "--host", "0.0.0.0", "--port", "8000"]
+# Render injects $PORT — do not hardcode 8000
+CMD ["sh", "-c", "uvicorn pii_redactor.api:app --host 0.0.0.0 --port ${PORT:-8000}"]

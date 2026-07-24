@@ -21,9 +21,13 @@ class Pipeline:
         self,
         spacy_model: Optional[str] = None,
         surrogate: Optional[SurrogateProvider] = None,
+        use_spacy: bool = True,
     ) -> None:
         model = spacy_model or os.environ.get("SPACY_MODEL", "en_core_web_md")
-        self.registry = build_default_registry(spacy_model=model)
+        self.registry = build_default_registry(
+            spacy_model=model if use_spacy else None,
+            use_spacy=use_spacy,
+        )
         self.surrogate = surrogate or SurrogateProvider()
         self._ner = next(
             (r for r in self.registry if isinstance(r, SpacyNERRecognizer)), None
@@ -41,11 +45,9 @@ class Pipeline:
 
         segments = list(adapter.iter_segments())
 
-        # Batch NER for speed when available
         ner_by_index: List[list] = [[] for _ in segments]
         if self._ner is not None:
             texts = [s.text for s in segments]
-            # Only run NER on non-empty, reasonably sized segments
             nonempty_idx = [i for i, t in enumerate(texts) if t and t.strip()]
             batch_texts = [texts[i] for i in nonempty_idx]
             if batch_texts:
@@ -60,7 +62,7 @@ class Pipeline:
             spans = []
             for recognizer in self.registry:
                 if isinstance(recognizer, SpacyNERRecognizer):
-                    continue  # already batched
+                    continue
                 spans.extend(recognizer.detect(segment.text, ctx))
             spans.extend(ner_by_index[idx])
             spans = apply_filters(spans)
@@ -101,5 +103,8 @@ class Pipeline:
         return audit
 
 
-def build_pipeline(spacy_model: Optional[str] = None) -> Pipeline:
-    return Pipeline(spacy_model=spacy_model)
+def build_pipeline(
+    spacy_model: Optional[str] = None,
+    use_spacy: bool = True,
+) -> Pipeline:
+    return Pipeline(spacy_model=spacy_model, use_spacy=use_spacy)
