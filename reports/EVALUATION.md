@@ -127,7 +127,9 @@ The pipeline walks **extractable Word text only**: body paragraphs, nested table
 
 ## How a reviewer should run this (CLI)
 
-The GitHub README is the primary path. Cloud URL is an optional smoke demo for a **small** `.docx` only (`examples/sample_small.docx`).
+The GitHub README is the primary path. Cloud URL is an optional smoke demo for a **small** `.docx` only.
+
+On the deployed site (or `make serve`): use **`GET /sample`** to download `sample_small.docx`, then upload it on `/` and click Redact. Same file lives in the repo at `examples/sample_small.docx`. Do not upload the full prospectus to the web demo.
 
 `data/` is gitignored on purpose (client prospectus). After clone:
 
@@ -149,8 +151,8 @@ python -m pii_redactor.cli input.docx -o redacted.docx --audit audit.jsonl
 python eval/leak_scan.py redacted.docx
 ```
 
-Local browser demo: `make serve` → http://127.0.0.1:8000 (upload `examples/sample_small.docx`)  
-Deployed demo: same small sample only — not the full prospectus.
+Local browser demo: `make serve` → http://127.0.0.1:8000 → `/sample` then upload  
+Deployed demo: https://pii-redactor-1-guhx.onrender.com → same `/sample` flow
 
 ## Reproducibility
 

@@ -73,12 +73,21 @@ Modular monolith. One library, two thin entry points (CLI + FastAPI).
 
 Repo: https://github.com/Karthik-banglore/pii-redactor
 
-The deployed service is a **size-capped demo** (~2 MB upload). Render free tier is 512 MB RAM / 0.1 CPU and sleeps after 15 minutes idle. The full prospectus is processed by the **CLI** (see Quick start above) — that is what graders should run. Demo upload: [`examples/sample_small.docx`](examples/sample_small.docx).
+The deployed service is a **size-capped demo** (~2 MB upload). Render free tier is 512 MB RAM / 0.1 CPU and sleeps after 15 minutes idle. The full prospectus is processed by the **CLI** (see Quick start above) — that is what graders should run.
+
+**How to try the cloud demo**
+
+1. Open https://pii-redactor-1-guhx.onrender.com (or local `make serve`)
+2. Click **Download sample_small.docx** on the page (`GET /sample`) — or use [`examples/sample_small.docx`](examples/sample_small.docx) from this repo
+3. Upload that file → **Redact** → browser downloads `redacted.docx`
+
+Do **not** upload the full prospectus to the web demo.
 
 **Known gaps (documented in `reports/EVALUATION.md`):** no OCR on embedded images (e.g. PAN card photos); some table/financial headings can still be over-redacted despite denylists.
 
 ```
-GET  /         upload form
+GET  /         upload form (explains sample flow)
+GET  /sample   download bundled examples/sample_small.docx
 POST /redact   → redacted .docx
 POST /analyze  → JSON audit
 GET  /health
