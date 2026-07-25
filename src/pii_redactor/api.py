@@ -47,32 +47,74 @@ def _cleanup(path: str) -> None:
         pass
 
 
+def _repo_root() -> Path:
+    # src/pii_redactor/api.py → project root (local + Docker /app)
+    return Path(__file__).resolve().parents[2]
+
+
+def _sample_path() -> Path:
+    return _repo_root() / "examples" / "sample_small.docx"
+
+
 UPLOAD_FORM = """
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8"/>
-  <title>PII Redactor</title>
+  <title>PII Redactor — Demo</title>
   <style>
-    body { font-family: Georgia, serif; max-width: 40rem; margin: 3rem auto; padding: 0 1rem;
-           background: #f7f4ef; color: #1a1a1a; }
-    h1 { font-size: 1.75rem; }
-    .card { background: #fff; border: 1px solid #ddd; padding: 1.5rem; }
-    input[type=file] { margin: 1rem 0; }
-    button { background: #1a1a1a; color: #fff; border: 0; padding: 0.6rem 1.2rem; cursor: pointer; }
+    body { font-family: Georgia, serif; max-width: 42rem; margin: 3rem auto; padding: 0 1rem;
+           background: #f7f4ef; color: #1a1a1a; line-height: 1.45; }
+    h1 { font-size: 1.75rem; margin-bottom: 0.35rem; }
+    h2 { font-size: 1.1rem; margin: 0 0 0.75rem; }
+    .card { background: #fff; border: 1px solid #ddd; padding: 1.5rem; margin: 1rem 0; }
+    .steps { margin: 0; padding-left: 1.25rem; }
+    .steps li { margin: 0.4rem 0; }
+    input[type=file] { margin: 1rem 0; display: block; }
+    button, .btn {
+      display: inline-block; background: #1a1a1a; color: #fff; border: 0;
+      padding: 0.65rem 1.2rem; cursor: pointer; text-decoration: none; font: inherit;
+    }
+    .btn.secondary { background: #fff; color: #1a1a1a; border: 1px solid #1a1a1a; margin-right: 0.5rem; }
+    .warn { background: #fff8e6; border: 1px solid #e6d9a8; padding: 0.85rem 1rem; margin: 1rem 0; }
     .note { color: #555; font-size: 0.9rem; margin-top: 1rem; }
+    code { font-size: 0.9em; }
   </style>
 </head>
 <body>
   <h1>PII Redactor</h1>
-  <p>Upload a Word document. Detected PII is replaced with deterministic fake values.</p>
+  <p>Cloud demo (size-capped). Detected PII is replaced with deterministic fake values.</p>
+
+  <div class="warn">
+    <strong>Do not upload the full prospectus here.</strong>
+    This free demo accepts <strong>.docx files up to 2&nbsp;MB</strong> and runs a light regex path.
+    Use the sample below (~36&nbsp;KB), or run the full document via the
+    <a href="https://github.com/Karthik-banglore/pii-redactor#quick-start">CLI on GitHub</a>.
+  </div>
+
   <div class="card">
+    <h2>Try the demo (3 steps)</h2>
+    <ol class="steps">
+      <li>
+        <a class="btn secondary" href="/sample">Download sample_small.docx</a>
+        (also on GitHub:
+        <a href="https://github.com/Karthik-banglore/pii-redactor/raw/main/examples/sample_small.docx">examples/sample_small.docx</a>)
+      </li>
+      <li>Upload that file with the form below.</li>
+      <li>Click <strong>Redact</strong> — your browser downloads <code>redacted.docx</code>.</li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <h2>Upload</h2>
     <form action="/redact" method="post" enctype="multipart/form-data">
-      <input type="file" name="file" accept=".docx" required />
+      <input type="file" name="file" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" required />
       <div><button type="submit">Redact</button></div>
     </form>
-    <p class="note">Max upload: 2&nbsp;MB on this demo. Full prospectus: use the CLI.
-    Interactive API docs: <a href="/docs">/docs</a></p>
+    <p class="note">
+      Max upload: 2&nbsp;MB · API docs: <a href="/docs">/docs</a> · Health: <a href="/health">/health</a><br/>
+      Source / full CLI: <a href="https://github.com/Karthik-banglore/pii-redactor">github.com/Karthik-banglore/pii-redactor</a>
+    </p>
   </div>
 </body>
 </html>
@@ -82,6 +124,26 @@ UPLOAD_FORM = """
 @app.get("/", response_class=HTMLResponse)
 def index() -> str:
     return UPLOAD_FORM
+
+
+@app.get("/sample")
+def download_sample():
+    """Serve the bundled small .docx so reviewers need not dig through GitHub first."""
+    path = _sample_path()
+    if not path.is_file():
+        raise HTTPException(
+            status_code=404,
+            detail=(
+                "Sample file missing on this deploy. "
+                "Download from GitHub: "
+                "https://github.com/Karthik-banglore/pii-redactor/raw/main/examples/sample_small.docx"
+            ),
+        )
+    return FileResponse(
+        path,
+        media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        filename="sample_small.docx",
+    )
 
 
 @app.get("/redact")
@@ -96,6 +158,7 @@ def health() -> dict:
         "status": "ok",
         "model": "regex-only" if SKIP_SPACY else SPACY_MODEL,
         "skip_spacy": SKIP_SPACY,
+        "sample": "/sample",
     }
 
 
