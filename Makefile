@@ -4,7 +4,6 @@ PYTHON := .venv/bin/python
 PIP := .venv/bin/pip
 
 setup:
-	git config core.hooksPath .githooks
 	python3 -m venv .venv
 	$(PIP) install --upgrade pip
 	$(PIP) install -e ".[dev]"

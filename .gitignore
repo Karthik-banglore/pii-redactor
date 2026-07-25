@@ -23,3 +23,8 @@ data/
 *.jsonl
 !eval/gold/gold_spans.jsonl
 !reports/audit.jsonl
+
+# Personal Cursor/git hooks only — not for clones (use local: git config core.hooksPath .githooks)
+.githooks/
+.cursor/hooks.json
+.cursor/hooks/
