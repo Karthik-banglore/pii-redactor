@@ -28,3 +28,6 @@ data/
 .githooks/
 .cursor/hooks.json
 .cursor/hooks/
+
+# Personal form checklist — not for clones
+SUBMISSION.md
