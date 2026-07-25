@@ -13,12 +13,13 @@ build/
 .env
 *.log
 
-# Client document and generated outputs — never commit
+# Client prospectus + local pipeline outputs — never commit the raw client doc
 data/
 !data/.gitkeep
 !data/input/.gitkeep
 !data/output/.gitkeep
 
-# Local audit / temp
+# Local / generated JSONL elsewhere — but keep committed eval evidence under reports/
 *.jsonl
 !eval/gold/gold_spans.jsonl
+!reports/audit.jsonl

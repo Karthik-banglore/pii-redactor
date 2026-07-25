@@ -7,19 +7,26 @@ Built for a take-home assignment against a ~300-page Indian IPO Red Herring Pros
 ## Quick start
 
 ```bash
-make setup          # venv + deps + spaCy en_core_web_md
-make test           # 21 unit tests
-make redact         # redact data/input/prospectus.docx → data/output/
-make eval           # precision/recall + leak scan
-make serve          # local FastAPI demo on :8000
+make setup                 # venv + deps + spaCy en_core_web_md
+make test                  # unit tests (no prospectus needed)
+make eval-from-reports     # score metrics from committed reports/audit.jsonl
+make serve                 # local FastAPI demo on :8000 (use examples/sample_small.docx)
 ```
 
-CLI:
+Full corpus re-run (assignment prospectus is **not** in the repo — `data/` is gitignored):
+
+```bash
+mkdir -p data/input
+cp "/path/to/Red Herring Prospectus.docx" data/input/prospectus.docx
+make redact                # → data/output/… and refreshes reports/audit.jsonl
+make eval                  # score + leak_scan on local outputs
+```
+
+CLI on any file:
 
 ```bash
 python -m pii_redactor.cli input.docx -o redacted.docx --audit audit.jsonl
 ```
-
 ## Architecture
 
 Modular monolith. One library, two thin entry points (CLI + FastAPI).
@@ -66,7 +73,9 @@ Modular monolith. One library, two thin entry points (CLI + FastAPI).
 
 Repo: https://github.com/Karthik-banglore/pii-redactor
 
-The deployed service is a **size-capped demo** (~2 MB upload). Render free tier is 512 MB RAM / 0.1 CPU and sleeps after 15 minutes idle. The full prospectus is processed by the CLI.
+The deployed service is a **size-capped demo** (~2 MB upload). Render free tier is 512 MB RAM / 0.1 CPU and sleeps after 15 minutes idle. The full prospectus is processed by the **CLI** (see Quick start above) — that is what graders should run. Demo upload: [`examples/sample_small.docx`](examples/sample_small.docx).
+
+**Known gaps (documented in `reports/EVALUATION.md`):** no OCR on embedded images (e.g. PAN card photos); some table/financial headings can still be over-redacted despite denylists.
 
 ```
 GET  /         upload form

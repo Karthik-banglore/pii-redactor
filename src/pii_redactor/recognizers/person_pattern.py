@@ -60,6 +60,31 @@ _DENY: Set[str] = {
     "individual promoters",
     "waterloo industrial",
     "kushal motors",
+    # Table / financial headings mistaken for person names
+    "corporate identity",
+    "identity number",
+    "bid amount",
+    "blocked amount",
+    "offered shares",
+    "total dues",
+    "total income",
+    "capital employed",
+    "capital expenditure",
+    "share capital",
+    "selling shareholder",
+    "aggregate amount",
+    "authorised share",
+    "authorized share",
+    "net proceeds",
+    "issue size",
+    "offer price",
+    "working capital",
+    "fixed assets",
+    "current assets",
+    "profit after",
+    "profit before",
+    "earnings per",
+    "book value",
 }
 
 _START_DENY: Set[str] = {
@@ -109,6 +134,21 @@ _START_DENY: Set[str] = {
     "certain",
     "further",
     "details",
+    "corporate",
+    "authorised",
+    "authorized",
+    "aggregate",
+    "proposed",
+    "blocked",
+    "offered",
+    "total",
+    "bid",
+    "net",
+    "face",
+    "issue",
+    "particulars",
+    "description",
+    "amount",
 }
 
 _SUFFIX_DENY = re.compile(
@@ -155,10 +195,14 @@ class PersonNameRecognizer:
                 continue
             if all(len(w.rstrip(".")) <= 2 for w in words):
                 continue
-            # Skip ALL CAPS that look like section headers (very short words only)
+            # Skip ALL CAPS that look like section / table headers
             if candidate.isupper() and any(w in {
                 "VALUE", "EACH", "FACE", "OFFER", "EQUITY", "SHARE", "SHARES",
                 "RISK", "FACTORS", "BOARD", "DIRECTORS", "LIMITED", "PRIVATE",
+                "AMOUNT", "TOTAL", "BID", "BLOCKED", "CAPITAL", "INCOME",
+                "DUES", "IDENTITY", "NUMBER", "CORPORATE", "AUTHORISED",
+                "AUTHORIZED", "AGGREGATE", "PROPOSED", "EXPENDITURE",
+                "PARTICULARS", "DESCRIPTION", "PROCEEDS", "ISSUE",
             } for w in words):
                 continue
             spans.append(
